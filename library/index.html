@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Library - WellnessRooted</title>
+    <style>
+        :root {
+            --primary: #2e7d73;
+            --light-bg: #ffffff;
+            --text: #333333;
+            --border: #eaeaea;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--light-bg);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .library-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .library-header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary);
+            border-radius: 30px;
+            transition: all 0.2s;
+        }
+        
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .topic-section {
+            margin-bottom: 3rem;
+        }
+        
+        .topic-title {
+            color: var(--primary);
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.75rem;
+        }
+        
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+        }
+        
+        .article-card:hover {
+            box-shadow: 0 8px 24px rgba(46,125,115,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .article-card h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+        }
+        
+        .read-time {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(46,125,115,0.05);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .article-description {
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        
+        .read-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+        }
+        
+        .read-more:hover {
+            border-bottom-color: var(--primary);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #666;
+        }
+        
+        .library-footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: #999;
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .article-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="library-header">
+            <h1>WellnessRooted Library</h1>
+            <p>Explore our complete collection of wellness articles</p>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+        
+        <div id="library-content">
+            <div class="loading">Loading wellness library...</div>
+        </div>
+        
+        <footer class="library-footer">
+            <p>© 2026 WellnessRooted. All content for educational purposes.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple library loader
+        const topics = [
+            'stress-management',
+            'health-optimization',
+            'personal-growth'
+        ];
+        
+        const displayNames = {
+            'stress-management': 'Stress Relief',
+            'health-optimization': 'Health Tips',
+            'personal-growth': 'Personal Growth'
+        };
+        
+        async function loadLibrary() {
+            const container = document.getElementById('library-content');
+            
+            try {
+                let html = '';
+                
+                for (const topic of topics) {
+                    try {
+                        const response = await fetch(`/content-library/modules/${topic}.json`);
+                        const data = await response.json();
+                        
+                        html += `
+                            <section class="topic-section">
+                                <h2 class="topic-title">${displayNames[topic]}</h2>
+                                <div class="article-grid">
+                                    ${data.articles.map(article => `
+                                        <article class="article-card">
+                                            <h3>${article.title}</h3>
+                                            <span class="read-time">${article.readTime} min read</span>
+                                            <p class="article-description">${article.description || 'Learn practical techniques for your wellness journey...'}</p>
+                                            <a href="/?topic=${topic}" class="read-more">
+                                                Read Article →
+                                            </a>
+                                        </article>
+                                    `).join('')}
+                                </div>
+                            </section>
+                        `;
+                    } catch (e) {
+                        console.log(`Skipping ${topic}: ${e}`);
+                    }
+                }
+                
+                container.innerHTML = html || '<p>Library coming soon...</p>';
+            } catch (error) {
+                container.innerHTML = '<p>Error loading library. Please try again.</p>';
+            }
+        }
+        
+        loadLibrary();
+    </script>
+</body>
+</html>
