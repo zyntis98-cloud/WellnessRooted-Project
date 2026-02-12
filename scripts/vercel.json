@@ -10,12 +10,34 @@
           "value": "application/javascript; charset=utf-8"
         }
       ]
+    },
+    {
+      "source": "/(.*)\\.css",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
     }
   ],
   "rewrites": [
     {
       "source": "/scripts/(.*)",
       "destination": "/scripts/$1"
+    },
+    {
+      "source": "/templates/(.*)",
+      "destination": "/templates/$1"
     }
   ]
 }

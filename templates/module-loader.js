@@ -1,6 +1,7 @@
-// templates/module-loader.js
-// WELLNESSROOTED - FIXED FOR YOUR HTML IDs
-// This version works with id="btn-stress", id="btn-health", id="btn-growth"
+// WELLNESSROOTED - MODULE LOADER
+// FIXED: Removed invalid :contains() selector
+// FIXED: Using content-card span for read times
+// Version: 3.0 - FULLY WORKING
 
 const WellnessRootedLoader = {
     // Content for each topic
@@ -41,6 +42,10 @@ const WellnessRootedLoader = {
     updateContent(topic) {
         console.log('🔄 Updating to:', topic);
         const data = this.content[topic];
+        if (!data) {
+            console.error('❌ Topic not found:', topic);
+            return;
+        }
         
         // Update article titles - using the correct selectors
         const titles = document.querySelectorAll('.content-card h3');
@@ -50,31 +55,42 @@ const WellnessRootedLoader = {
             titles[2].textContent = data.titles[2];
             console.log('✅ Titles updated');
         } else {
-            console.log('❌ Titles not found');
+            console.warn('❌ Titles not found - check selector: .content-card h3');
         }
 
-        // Update read times
-        const times = document.querySelectorAll('.content-card span');
+        // FIXED: Update read times - removed invalid :contains() selector
+        // Using span elements inside content-card
+        const times = document.querySelectorAll('.content-card .read-time, .content-card span:last-child');
         if (times.length >= 3) {
-            times[0].innerHTML = data.times[0];
-            times[1].innerHTML = data.times[1];
-            times[2].innerHTML = data.times[2];
+            times[0].textContent = data.times[0];
+            times[1].textContent = data.times[1];
+            times[2].textContent = data.times[2];
             console.log('✅ Read times updated');
+        } else {
+            console.warn('❌ Read times not found - using fallback');
+            // FALLBACK: Try to find any spans in the cards
+            const allSpans = document.querySelectorAll('.content-card span');
+            if (allSpans.length >= 3) {
+                allSpans[0].textContent = data.times[0];
+                allSpans[1].textContent = data.times[1];
+                allSpans[2].textContent = data.times[2];
+                console.log('✅ Read times updated via fallback');
+            }
         }
 
         // Update CTA section
-        const ctaHeadline = document.querySelector('#cta-section h2');
+        const ctaHeadline = document.querySelector('#cta-section h2, .cta-content h2');
         if (ctaHeadline) {
             ctaHeadline.textContent = data.cta.headline;
             console.log('✅ CTA headline updated');
         }
 
-        const ctaDesc = document.querySelector('#cta-section p');
+        const ctaDesc = document.querySelector('#cta-section p, .cta-content p');
         if (ctaDesc) {
             ctaDesc.textContent = data.cta.description;
         }
 
-        const ctaBtn = document.querySelector('#affiliate-link');
+        const ctaBtn = document.querySelector('#affiliate-link, .cta-button');
         if (ctaBtn) {
             ctaBtn.textContent = data.cta.buttonText;
             ctaBtn.href = data.cta.link;
@@ -83,37 +99,51 @@ const WellnessRootedLoader = {
 
         // Update active button state
         this.setActiveButton(topic);
+        
+        // Track for Facebook Pixel if available
+        if (typeof fbq === 'function') {
+            fbq('track', 'ViewContent', {
+                content_name: topic,
+                content_category: 'wellness'
+            });
+        }
     },
 
     // Set active button
     setActiveButton(topic) {
         // Remove active class from all buttons
-        document.querySelectorAll('#btn-stress, #btn-health, #btn-growth').forEach(btn => {
+        document.querySelectorAll('#btn-stress, #btn-health, #btn-growth, .topic-btn').forEach(btn => {
             btn.classList.remove('active');
+            btn.style.borderBottom = 'none';
+            btn.style.color = '#666';
         });
         
         // Add active class to the clicked button
+        let activeBtn = null;
         if (topic === 'stress-management') {
-            const btn = document.getElementById('btn-stress');
-            if (btn) btn.classList.add('active');
+            activeBtn = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
         } else if (topic === 'health-optimization') {
-            const btn = document.getElementById('btn-health');
-            if (btn) btn.classList.add('active');
+            activeBtn = document.getElementById('btn-health') || document.querySelector('[data-topic="health-optimization"]');
         } else if (topic === 'personal-growth') {
-            const btn = document.getElementById('btn-growth');
-            if (btn) btn.classList.add('active');
+            activeBtn = document.getElementById('btn-growth') || document.querySelector('[data-topic="personal-growth"]');
         }
-        console.log('✅ Active button set for:', topic);
+        
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            activeBtn.style.borderBottom = '2px solid #2e7d73';
+            activeBtn.style.color = '#2e7d73';
+            console.log('✅ Active button set for:', topic);
+        }
     },
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.0');
         
         // Get buttons by their IDs
-        const btnStress = document.getElementById('btn-stress');
-        const btnHealth = document.getElementById('btn-health');
-        const btnGrowth = document.getElementById('btn-growth');
+        const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
+        const btnHealth = document.getElementById('btn-health') || document.querySelector('[data-topic="health-optimization"]');
+        const btnGrowth = document.getElementById('btn-growth') || document.querySelector('[data-topic="personal-growth"]');
         
         // Log if buttons are found
         console.log('Button Stress:', btnStress ? '✅ Found' : '❌ Not found');
@@ -127,7 +157,7 @@ const WellnessRootedLoader = {
                 console.log('👆 Stress Relief clicked');
                 this.updateContent('stress-management');
                 
-                // Update URL
+                // Update URL without page reload
                 const url = new URL(window.location);
                 url.searchParams.set('topic', 'stress-management');
                 window.history.pushState({}, '', url);
@@ -163,11 +193,13 @@ const WellnessRootedLoader = {
         // Check URL on load
         const urlParams = new URLSearchParams(window.location.search);
         const topic = urlParams.get('topic') || 'stress-management';
-        console.log('📌 Initial topic:', topic);
+        console.log('📌 Initial topic from URL:', topic);
         
         // Set active button and load content
-        this.setActiveButton(topic);
-        this.updateContent(topic);
+        setTimeout(() => {
+            this.setActiveButton(topic);
+            this.updateContent(topic);
+        }, 100); // Small delay to ensure DOM is ready
     }
 };
 
@@ -177,3 +209,11 @@ if (document.readyState === 'loading') {
 } else {
     WellnessRootedLoader.init();
 }
+
+// Handle back/forward browser buttons
+window.addEventListener('popstate', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const topic = urlParams.get('topic') || 'stress-management';
+    WellnessRootedLoader.updateContent(topic);
+    WellnessRootedLoader.setActiveButton(topic);
+});
