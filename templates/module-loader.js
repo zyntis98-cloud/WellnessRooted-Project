@@ -1,7 +1,7 @@
 // WELLNESSROOTED - MODULE LOADER
 // FIXED: Removed invalid :contains() selector
 // FIXED: Using content-card span for read times
-// Version: 3.3 - Updated ALL topics with engaging descriptions
+// Version: 3.4 - Added Nutrition Fundamentals topic with engaging descriptions
 
 const WellnessRootedLoader = {
     // Content for each topic
@@ -49,6 +49,26 @@ const WellnessRootedLoader = {
                 description: 'Join thousands who\'ve transformed their mindset',
                 buttonText: 'Learn About Wealth DNA',
                 link: 'https://f14dfo0k43wockbujhj2itbyf3.hop.clickbank.net?tid=zyntis_fb_main'
+            }
+        },
+        // NEW: Nutrition Fundamentals Topic
+        'nutrition-fundamentals': {
+            titles: [
+                'The 5-Minute Meal Prep Rule That Actually Works',
+                'The 3 Food Combinations That Kill the Afternoon Slump',
+                '3 Signs Your Gut is Trying to Tell You Something'
+            ],
+            times: ['2 min read', '4 min read', '3 min read'],
+            descriptions: [
+                'Stop prepping meals. Start prepping ingredients. This one rule saves time and sanity.',
+                'Eat for energy, not just fullness. These combos keep your blood sugar steady all afternoon.',
+                'Bloating, cravings, skin issues—your gut communicates. Here\'s what to listen for.'
+            ],
+            cta: {
+                headline: 'Ready to Transform Your Nutrition?',
+                description: 'Simple, practical advice that fits your real life—no complicated diets required.',
+                buttonText: 'Learn More About Nutrition',
+                link: '#'  // Update this with your affiliate link when ready
             }
         }
     },
@@ -136,7 +156,7 @@ const WellnessRootedLoader = {
     // Set active button
     setActiveButton(topic) {
         // Remove active class from all buttons
-        document.querySelectorAll('#btn-stress, #btn-health, #btn-growth, .topic-btn').forEach(btn => {
+        document.querySelectorAll('#btn-stress, #btn-health, #btn-growth, #btn-nutrition, .topic-btn').forEach(btn => {
             btn.classList.remove('active');
             btn.style.borderBottom = 'none';
             btn.style.color = '#666';
@@ -150,6 +170,8 @@ const WellnessRootedLoader = {
             activeBtn = document.getElementById('btn-health') || document.querySelector('[data-topic="health-optimization"]');
         } else if (topic === 'personal-growth') {
             activeBtn = document.getElementById('btn-growth') || document.querySelector('[data-topic="personal-growth"]');
+        } else if (topic === 'nutrition-fundamentals') {
+            activeBtn = document.getElementById('btn-nutrition') || document.querySelector('[data-topic="nutrition-fundamentals"]');
         }
         
         if (activeBtn) {
@@ -162,17 +184,19 @@ const WellnessRootedLoader = {
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized - Version 3.3');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.4');
         
         // Get buttons by their IDs
         const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
         const btnHealth = document.getElementById('btn-health') || document.querySelector('[data-topic="health-optimization"]');
         const btnGrowth = document.getElementById('btn-growth') || document.querySelector('[data-topic="personal-growth"]');
+        const btnNutrition = document.getElementById('btn-nutrition') || document.querySelector('[data-topic="nutrition-fundamentals"]');
         
         // Log if buttons are found
         console.log('Button Stress:', btnStress ? '✅ Found' : '❌ Not found');
         console.log('Button Health:', btnHealth ? '✅ Found' : '❌ Not found');
         console.log('Button Growth:', btnGrowth ? '✅ Found' : '❌ Not found');
+        console.log('Button Nutrition:', btnNutrition ? '✅ Found' : '❌ Not found');
         
         // Add click listeners to Stress button
         if (btnStress) {
@@ -210,6 +234,19 @@ const WellnessRootedLoader = {
                 
                 const url = new URL(window.location);
                 url.searchParams.set('topic', 'personal-growth');
+                window.history.pushState({}, '', url);
+            });
+        }
+        
+        // Add click listeners to Nutrition button
+        if (btnNutrition) {
+            btnNutrition.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('👆 Nutrition Fundamentals clicked');
+                this.updateContent('nutrition-fundamentals');
+                
+                const url = new URL(window.location);
+                url.searchParams.set('topic', 'nutrition-fundamentals');
                 window.history.pushState({}, '', url);
             });
         }
