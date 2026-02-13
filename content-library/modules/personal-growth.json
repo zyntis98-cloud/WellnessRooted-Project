@@ -1,15 +1,19 @@
 {
-  "topic": "personal-growth",
-  "displayName": "Personal Growth",
-  "cta": {
-    "headline": "Ready to Unlock Your Potential?",
-    "description": "Join thousands who've transformed their mindset",
-    "buttonText": "Learn About Wealth DNA",
-    "affiliateLink": "https://f14dfo0k43wockbujhj2itbyf3.hop.clickbank.net?tid=zyntis_fb_main"
-  },
-  "articles": [
-    {"id": "abundance-mindset", "title": "Abundance Mindset", "readTime": 3, "description": "Learn practical techniques for your wellness journey..."},
-    {"id": "goal-setting", "title": "Goal Setting", "readTime": 4, "description": "Learn practical techniques for your wellness journey..."},
-    {"id": "morning-success", "title": "Morning Success", "readTime": 5, "description": "Learn practical techniques for your wellness journey..."}
-  ]
+    "articles": [
+        {
+            "title": "Abundance Mindset",
+            "readTime": 3,
+            "description": "How wealthy people think differently about money (and how you can too)"
+        },
+        {
+            "title": "Goal Setting",
+            "readTime": 4,
+            "description": "The science-backed method that makes you 42% more likely to achieve your goals"
+        },
+        {
+            "title": "Morning Success",
+            "readTime": 5,
+            "description": "What billionaires do in the first 60 minutes after waking up"
+        }
+    ]
 }

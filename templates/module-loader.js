@@ -1,14 +1,19 @@
 // WELLNESSROOTED - MODULE LOADER
 // FIXED: Removed invalid :contains() selector
 // FIXED: Using content-card span for read times
-// Version: 3.0 - FULLY WORKING
+// Version: 3.3 - Updated ALL topics with engaging descriptions
 
 const WellnessRootedLoader = {
     // Content for each topic
     content: {
         'stress-management': {
-            titles: ['Mindfulness Basics', 'Stress Science', 'Breathing Techniques'],
-            times: ['3 min read', '4 min read', '5 min read'],
+            titles: ['Find Calm in 3 Minutes', 'Rewire Your Stress Response', 'The 60-Second Reset Button'],
+            times: ['3 min read', '5 min read', '2 min read'],
+            descriptions: [
+                'Learn practical techniques for your wellness journey...',
+                'Simple daily practices that actually change how your brain handles stress',
+                'An ancient breathing method that works in the time it takes to wash your hands'
+            ],
             cta: {
                 headline: 'Ready for More Peace?',
                 description: 'Join thousands who\'ve found calm with this 7-minute practice',
@@ -19,6 +24,11 @@ const WellnessRootedLoader = {
         'health-optimization': {
             titles: ['Morning Metabolism', 'Coffee Benefits', 'Healthy Routines'],
             times: ['3 min read', '4 min read', '5 min read'],
+            descriptions: [
+                'Wake up your metabolism with this 2-minute morning ritual used by biohackers',
+                'Why drinking coffee at this specific time maximizes energy without the jitters',
+                'The 5 habits that add 10 years to your lifespan (backed by Harvard research)'
+            ],
             cta: {
                 headline: 'Ready to Transform Your Health?',
                 description: 'Discover how morning rituals can optimize your metabolism',
@@ -29,6 +39,11 @@ const WellnessRootedLoader = {
         'personal-growth': {
             titles: ['Abundance Mindset', 'Goal Setting', 'Morning Success'],
             times: ['3 min read', '4 min read', '5 min read'],
+            descriptions: [
+                'How wealthy people think differently about money (and how you can too)',
+                'The science-backed method that makes you 42% more likely to achieve your goals',
+                'What billionaires do in the first 60 minutes after waking up'
+            ],
             cta: {
                 headline: 'Ready to Unlock Your Potential?',
                 description: 'Join thousands who\'ve transformed their mindset',
@@ -47,7 +62,7 @@ const WellnessRootedLoader = {
             return;
         }
         
-        // Update article titles - using the correct selectors
+        // Update article titles
         const titles = document.querySelectorAll('.content-card h3');
         if (titles.length >= 3) {
             titles[0].textContent = data.titles[0];
@@ -58,8 +73,18 @@ const WellnessRootedLoader = {
             console.warn('❌ Titles not found - check selector: .content-card h3');
         }
 
-        // FIXED: Update read times - removed invalid :contains() selector
-        // Using span elements inside content-card
+        // Update article descriptions
+        const descriptions = document.querySelectorAll('.content-card p');
+        if (descriptions.length >= 3) {
+            descriptions[0].textContent = data.descriptions[0];
+            descriptions[1].textContent = data.descriptions[1];
+            descriptions[2].textContent = data.descriptions[2];
+            console.log('✅ Descriptions updated');
+        } else {
+            console.warn('❌ Descriptions not found - check selector: .content-card p');
+        }
+
+        // Update read times
         const times = document.querySelectorAll('.content-card .read-time, .content-card span:last-child');
         if (times.length >= 3) {
             times[0].textContent = data.times[0];
@@ -67,7 +92,6 @@ const WellnessRootedLoader = {
             times[2].textContent = data.times[2];
             console.log('✅ Read times updated');
         } else {
-            console.warn('❌ Read times not found - using fallback');
             // FALLBACK: Try to find any spans in the cards
             const allSpans = document.querySelectorAll('.content-card span');
             if (allSpans.length >= 3) {
@@ -138,7 +162,7 @@ const WellnessRootedLoader = {
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized - Version 3.0');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.3');
         
         // Get buttons by their IDs
         const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');

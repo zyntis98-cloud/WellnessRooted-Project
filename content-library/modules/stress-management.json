@@ -1,15 +1,19 @@
 {
-  "topic": "stress-management",
-  "displayName": "Stress Relief",
-  "cta": {
-    "headline": "Ready for More Peace?",
-    "description": "Join thousands who've found calm with this 7-minute practice",
-    "buttonText": "Learn About Mindfulness",
-    "affiliateLink": "https://66758wz8452oer1zv4xl08swem.hop.clickbank.net?tid=zyntis_fb_main"
-  },
-  "articles": [
-    {"id": "mindfulness-basics", "title": "Mindfulness Basics", "readTime": 3, "description": "Learn practical techniques for your wellness journey..."},
-    {"id": "stress-science", "title": "Stress Science", "readTime": 4, "description": "Learn practical techniques for your wellness journey..."},
-    {"id": "breathing-techniques", "title": "Breathing Techniques", "readTime": 5, "description": "Learn practical techniques for your wellness journey..."}
-  ]
+    "articles": [
+        {
+            "title": "Find Calm in 3 Minutes",
+            "readTime": 3,
+            "description": "Learn practical techniques for your wellness journey..."
+        },
+        {
+            "title": "Rewire Your Stress Response",
+            "readTime": 5,
+            "description": "Simple daily practices that actually change how your brain handles stress"
+        },
+        {
+            "title": "The 60-Second Reset Button",
+            "readTime": 2,
+            "description": "An ancient breathing method that works in the time it takes to wash your hands"
+        }
+    ]
 }
