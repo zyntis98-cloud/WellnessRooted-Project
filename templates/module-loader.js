@@ -1,7 +1,7 @@
 // WELLNESSROOTED - MODULE LOADER
 // FIXED: Removed invalid :contains() selector
 // FIXED: Using content-card span for read times
-// Version: 3.4 - Added Nutrition Fundamentals topic with engaging descriptions
+// Version: 3.5 - Added clickable cards with WordPress article links
 
 const WellnessRootedLoader = {
     // Content for each topic
@@ -14,6 +14,8 @@ const WellnessRootedLoader = {
                 'Simple daily practices that actually change how your brain handles stress',
                 'An ancient breathing method that works in the time it takes to wash your hands'
             ],
+            // No links for stress management yet
+            links: [],
             cta: {
                 headline: 'Ready for More Peace?',
                 description: 'Join thousands who\'ve found calm with this 7-minute practice',
@@ -29,6 +31,8 @@ const WellnessRootedLoader = {
                 'Why drinking coffee at this specific time maximizes energy without the jitters',
                 'The 5 habits that add 10 years to your lifespan (backed by Harvard research)'
             ],
+            // No links for health optimization yet
+            links: [],
             cta: {
                 headline: 'Ready to Transform Your Health?',
                 description: 'Discover how morning rituals can optimize your metabolism',
@@ -44,6 +48,8 @@ const WellnessRootedLoader = {
                 'The science-backed method that makes you 42% more likely to achieve your goals',
                 'What billionaires do in the first 60 minutes after waking up'
             ],
+            // No links for personal growth yet
+            links: [],
             cta: {
                 headline: 'Ready to Unlock Your Potential?',
                 description: 'Join thousands who\'ve transformed their mindset',
@@ -51,7 +57,7 @@ const WellnessRootedLoader = {
                 link: 'https://f14dfo0k43wockbujhj2itbyf3.hop.clickbank.net?tid=zyntis_fb_main'
             }
         },
-        // NEW: Nutrition Fundamentals Topic
+        // Nutrition Fundamentals Topic with WordPress Links
         'nutrition-fundamentals': {
             titles: [
                 'The 5-Minute Meal Prep Rule That Actually Works',
@@ -64,6 +70,12 @@ const WellnessRootedLoader = {
                 'Eat for energy, not just fullness. These combos keep your blood sugar steady all afternoon.',
                 'Bloating, cravings, skin issues—your gut communicates. Here\'s what to listen for.'
             ],
+            // WordPress article links
+            links: [
+                'https://zyntis.com/wellness/the-5-minute-meal-prep-rule-that-actually-works/',
+                'https://zyntis.com/wellness/the-3-food-combinations-that-kill-the-afternoon-slump/',
+                'https://zyntis.com/wellness/3-signs-your-gut-is-trying-to-tell-you-something/'
+            ],
             cta: {
                 headline: 'Ready to Transform Your Nutrition?',
                 description: 'Simple, practical advice that fits your real life—no complicated diets required.',
@@ -71,6 +83,54 @@ const WellnessRootedLoader = {
                 link: '#'  // Update this with your affiliate link when ready
             }
         }
+    },
+
+    // Make cards clickable with article links
+    makeCardsClickable(links) {
+        const cards = document.querySelectorAll('.content-card');
+        if (cards.length >= 3 && links && links.length >= 3) {
+            // First, remove any existing click listeners to prevent duplicates
+            cards.forEach(card => {
+                card.style.cursor = 'default';
+                card.removeEventListener('click', this.cardClickHandler);
+            });
+            
+            // Add new click listeners
+            cards.forEach((card, index) => {
+                // Store the link as a property on the card
+                card.dataset.link = links[index];
+                
+                // Make entire card clickable
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', this.cardClickHandler);
+                
+                // Add subtle hover effect
+                card.addEventListener('mouseenter', this.cardMouseEnter);
+                card.addEventListener('mouseleave', this.cardMouseLeave);
+            });
+            console.log('✅ Cards made clickable for', links.length, 'articles');
+        }
+    },
+
+    // Card click handler
+    cardClickHandler(e) {
+        const link = e.currentTarget.dataset.link;
+        if (link) {
+            window.open(link, '_blank'); // Opens in new tab
+        }
+    },
+
+    // Card mouse enter handler
+    cardMouseEnter(e) {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.transition = 'transform 0.2s, box-shadow 0.2s';
+        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.1)';
+    },
+
+    // Card mouse leave handler
+    cardMouseLeave(e) {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 5px 20px rgba(0,0,0,0.03)';
     },
 
     // Update the page content
@@ -120,6 +180,24 @@ const WellnessRootedLoader = {
                 allSpans[2].textContent = data.times[2];
                 console.log('✅ Read times updated via fallback');
             }
+        }
+
+        // Make cards clickable if links exist
+        if (data.links && data.links.length >= 3) {
+            this.makeCardsClickable(data.links);
+        } else {
+            // If no links, remove clickability
+            const cards = document.querySelectorAll('.content-card');
+            cards.forEach(card => {
+                card.style.cursor = 'default';
+                card.removeEventListener('click', this.cardClickHandler);
+                card.removeEventListener('mouseenter', this.cardMouseEnter);
+                card.removeEventListener('mouseleave', this.cardMouseLeave);
+                // Reset styles
+                card.style.transform = '';
+                card.style.transition = '';
+                card.style.boxShadow = '';
+            });
         }
 
         // Update CTA section
@@ -184,7 +262,7 @@ const WellnessRootedLoader = {
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized - Version 3.4');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.5');
         
         // Get buttons by their IDs
         const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
