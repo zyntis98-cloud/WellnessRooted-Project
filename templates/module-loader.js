@@ -1,7 +1,7 @@
 // WELLNESSROOTED - MODULE LOADER
 // FIXED: Removed invalid :contains() selector
 // FIXED: Using content-card span for read times
-// Version: 3.5 - Added clickable cards with WordPress article links
+// Version: 3.6 - Added all WordPress article links for all topics
 
 const WellnessRootedLoader = {
     // Content for each topic
@@ -10,12 +10,16 @@ const WellnessRootedLoader = {
             titles: ['Find Calm in 3 Minutes', 'Rewire Your Stress Response', 'The 60-Second Reset Button'],
             times: ['3 min read', '5 min read', '2 min read'],
             descriptions: [
-                'Learn practical techniques for your wellness journey...',
-                'Simple daily practices that actually change how your brain handles stress',
-                'An ancient breathing method that works in the time it takes to wash your hands'
+                'Practical techniques that work anywhere, anytime—no meditation experience required.',
+                'Simple daily practices that actually change how your brain handles stress.',
+                'An ancient breathing method that works in the time it takes to wash your hands.'
             ],
-            // No links for stress management yet
-            links: [],
+            // WordPress article links
+            links: [
+                'https://zyntis.com/wellness/find-calm-in-3-minutes/',
+                'https://zyntis.com/wellness/rewire-your-stress-response/',
+                'https://zyntis.com/wellness/the-60-second-reset-button/'
+            ],
             cta: {
                 headline: 'Ready for More Peace?',
                 description: 'Join thousands who\'ve found calm with this 7-minute practice',
@@ -27,12 +31,16 @@ const WellnessRootedLoader = {
             titles: ['Morning Metabolism', 'Coffee Benefits', 'Healthy Routines'],
             times: ['3 min read', '4 min read', '5 min read'],
             descriptions: [
-                'Wake up your metabolism with this 2-minute morning ritual used by biohackers',
-                'Why drinking coffee at this specific time maximizes energy without the jitters',
-                'The 5 habits that add 10 years to your lifespan (backed by Harvard research)'
+                'Wake up your metabolism with this 2-minute morning ritual used by biohackers.',
+                'Why drinking coffee at this specific time maximizes energy without the jitters.',
+                'The 5 habits that add 10 years to your lifespan (backed by Harvard research).'
             ],
-            // No links for health optimization yet
-            links: [],
+            // WordPress article links
+            links: [
+                'https://zyntis.com/wellness/morning-metabolism/',
+                'https://zyntis.com/wellness/coffee-benefits/',
+                'https://zyntis.com/wellness/healthy-routines/'
+            ],
             cta: {
                 headline: 'Ready to Transform Your Health?',
                 description: 'Discover how morning rituals can optimize your metabolism',
@@ -44,12 +52,16 @@ const WellnessRootedLoader = {
             titles: ['Abundance Mindset', 'Goal Setting', 'Morning Success'],
             times: ['3 min read', '4 min read', '5 min read'],
             descriptions: [
-                'How wealthy people think differently about money (and how you can too)',
-                'The science-backed method that makes you 42% more likely to achieve your goals',
-                'What billionaires do in the first 60 minutes after waking up'
+                'How wealthy people think differently about money (and how you can too).',
+                'The science-backed method that makes you 42% more likely to achieve your goals.',
+                'What billionaires do in the first 60 minutes after waking up.'
             ],
-            // No links for personal growth yet
-            links: [],
+            // WordPress article links
+            links: [
+                'https://zyntis.com/wellness/abundance-mindset/',
+                'https://zyntis.com/wellness/goal-setting/',
+                'https://zyntis.com/wellness/morning-success/'
+            ],
             cta: {
                 headline: 'Ready to Unlock Your Potential?',
                 description: 'Join thousands who\'ve transformed their mindset',
@@ -262,7 +274,7 @@ const WellnessRootedLoader = {
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized - Version 3.5');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.6');
         
         // Get buttons by their IDs
         const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
