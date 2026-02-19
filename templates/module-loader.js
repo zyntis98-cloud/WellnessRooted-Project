@@ -1,7 +1,7 @@
 // WELLNESSROOTED - MODULE LOADER
 // FIXED: Removed invalid :contains() selector
 // FIXED: Using content-card span for read times
-// Version: 3.7 - Added blog post footer override to remove Zyntis footer
+// Version: 3.9 - Complete blog post theming to match WellnessRooted brand
 
 const WellnessRootedLoader = {
     // Content for each topic
@@ -274,7 +274,7 @@ const WellnessRootedLoader = {
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized - Version 3.7');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.9');
         
         // Get buttons by their IDs
         const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
@@ -353,52 +353,450 @@ const WellnessRootedLoader = {
         }, 100); // Small delay to ensure DOM is ready
     },
 
-    // NEW: Blog post footer override - removes Zyntis footer and adds WellnessRooted footer
-    overrideBlogFooter() {
-        // Check if we're on a blog post (WordPress article)
+    // NEW: Complete blog post theming to match WellnessRooted brand
+    themeBlogPost() {
+        // Check if we're on a blog post
         const isBlogPost = window.location.pathname.includes('/wellness/') || 
                           document.querySelector('article.post, .post-content, .entry-content, .blog-post');
         
         if (isBlogPost) {
-            console.log('📝 Blog post detected - checking footer');
+            console.log('🎨 Applying WellnessRooted theme to blog post');
             
-            // Keep checking until footer is loaded (WordPress might load it late)
-            const checkInterval = setInterval(() => {
-                const footer = document.querySelector('footer');
+            // Add WellnessRooted styles to the page
+            this.addWellnessStyles();
+            
+            // Transform the header/navigation
+            this.transformHeader();
+            
+            // Transform the main content area
+            this.transformContent();
+            
+            // Transform the sidebar if it exists
+            this.transformSidebar();
+            
+            // Replace the footer
+            this.replaceFooter();
+            
+            // Add a "Back to Home" button
+            this.addBackToHomeButton();
+            
+            // Add related articles section
+            this.addRelatedArticles();
+        }
+    },
+
+    // Add global WellnessRooted styles
+    addWellnessStyles() {
+        const styleId = 'wellness-rooted-blog-styles';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                /* WellnessRooted Blog Theme */
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                    color: #2d3748;
+                    line-height: 1.6;
+                    background-color: #ffffff;
+                }
                 
-                // Check if footer exists and contains Zyntis content
-                if (footer && (footer.innerHTML.includes('zyntis.com') || 
-                              footer.innerHTML.includes('Zyntis') ||
-                              footer.querySelector('.site-info, .copyright'))) {
-                    
-                    console.log('🔄 Found Zyntis footer in blog post - replacing with WellnessRooted footer');
-                    clearInterval(checkInterval);
-                    
-                    // Create WellnessRooted custom footer
-                    const wellnessFooter = document.createElement('footer');
-                    wellnessFooter.className = 'wellness-footer blog-footer';
-                    wellnessFooter.innerHTML = `
-                        <div class="footer-content" style="text-align: center; padding: 2rem; background: #f8fafc; margin-top: 3rem; border-top: 1px solid #e2e8f0;">
-                            <p style="color: #4a5568; margin-bottom: 0.5rem;">© 2026 WellnessRooted. All rights reserved.</p>
-                            <div style="margin-top: 0.5rem;">
-                                <a href="/privacy" style="color: #2f855a; text-decoration: none; margin: 0 0.5rem; font-size: 0.9rem;">Privacy</a>
-                                <span style="color: #cbd5e0;">|</span>
-                                <a href="/terms" style="color: #2f855a; text-decoration: none; margin: 0 0.5rem; font-size: 0.9rem;">Terms</a>
-                                <span style="color: #cbd5e0;">|</span>
-                                <a href="/contact" style="color: #2f855a; text-decoration: none; margin: 0 0.5rem; font-size: 0.9rem;">Contact</a>
+                /* Header styling */
+                .wellness-header {
+                    background: white;
+                    border-bottom: 1px solid #e2e8f0;
+                    padding: 1rem 0;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+                }
+                
+                .wellness-header h1, .wellness-header .site-title {
+                    color: #2e7d73 !important;
+                    font-size: 1.8rem !important;
+                    font-weight: 600 !important;
+                }
+                
+                /* Content styling */
+                .wellness-content {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 2rem 20px;
+                }
+                
+                .wellness-content h1 {
+                    color: #2d3748;
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    line-height: 1.2;
+                    margin-bottom: 1.5rem;
+                }
+                
+                .wellness-content h2 {
+                    color: #2d3748;
+                    font-size: 1.8rem;
+                    font-weight: 600;
+                    margin: 2rem 0 1rem;
+                }
+                
+                .wellness-content h3 {
+                    color: #2d3748;
+                    font-size: 1.4rem;
+                    font-weight: 600;
+                    margin: 1.5rem 0 1rem;
+                }
+                
+                .wellness-content p {
+                    color: #4a5568;
+                    font-size: 1.1rem;
+                    line-height: 1.8;
+                    margin-bottom: 1.5rem;
+                }
+                
+                .wellness-content a {
+                    color: #2e7d73;
+                    text-decoration: none;
+                    border-bottom: 1px solid transparent;
+                    transition: border-color 0.2s;
+                }
+                
+                .wellness-content a:hover {
+                    border-bottom-color: #2e7d73;
+                }
+                
+                /* Blog meta information */
+                .wellness-meta {
+                    color: #718096;
+                    font-size: 0.95rem;
+                    margin-bottom: 2rem;
+                    padding-bottom: 1rem;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+                
+                /* Featured image */
+                .wellness-featured-image {
+                    margin: 2rem 0;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                
+                .wellness-featured-image img {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                }
+                
+                /* Back to home button */
+                .wellness-back-home {
+                    display: inline-block;
+                    background: #2e7d73;
+                    color: white !important;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 6px;
+                    text-decoration: none;
+                    font-weight: 500;
+                    margin: 2rem 0;
+                    transition: background-color 0.2s;
+                    border: none !important;
+                }
+                
+                .wellness-back-home:hover {
+                    background: #1f5a52;
+                    color: white !important;
+                }
+                
+                /* Related articles section */
+                .wellness-related {
+                    background: #f8fafc;
+                    padding: 3rem 0;
+                    margin: 3rem 0 0;
+                    border-top: 1px solid #e2e8f0;
+                }
+                
+                .wellness-related h2 {
+                    text-align: center;
+                    color: #2d3748;
+                    font-size: 2rem;
+                    margin-bottom: 2rem;
+                }
+                
+                .wellness-related-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 2rem;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 20px;
+                }
+                
+                .wellness-related-card {
+                    background: white;
+                    padding: 1.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+                
+                .wellness-related-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+                
+                .wellness-related-card h3 {
+                    color: #2d3748;
+                    font-size: 1.2rem;
+                    margin-bottom: 0.5rem;
+                }
+                
+                .wellness-related-card p {
+                    color: #718096;
+                    font-size: 0.95rem;
+                    margin-bottom: 1rem;
+                }
+                
+                .wellness-related-card .read-more {
+                    color: #2e7d73;
+                    font-weight: 500;
+                    text-decoration: none;
+                }
+                
+                /* Wellness footer */
+                .wellness-footer {
+                    background: #f8fafc;
+                    border-top: 1px solid #e2e8f0;
+                    padding: 3rem 0;
+                }
+                
+                .wellness-footer a {
+                    color: #2e7d73;
+                    text-decoration: none;
+                }
+                
+                .wellness-footer a:hover {
+                    text-decoration: underline;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    },
+
+    // Transform the header/navigation
+    transformHeader() {
+        const header = document.querySelector('header, .site-header, [class*="header"]');
+        if (header) {
+            header.classList.add('wellness-header');
+            
+            // Replace logo/branding if it contains Zyntis
+            const siteTitle = header.querySelector('.site-title, .logo, [class*="brand"]');
+            if (siteTitle && siteTitle.textContent.includes('Zyntis')) {
+                siteTitle.innerHTML = '<a href="/" style="color: #2e7d73; text-decoration: none;">WellnessRooted</a>';
+            }
+            
+            // Transform navigation links
+            const nav = header.querySelector('nav, [class*="nav"]');
+            if (nav) {
+                const links = nav.querySelectorAll('a');
+                links.forEach(link => {
+                    if (link.textContent.includes('Financial') || link.textContent.includes('HSA') || 
+                        link.textContent.includes('Credit') || link.textContent.includes('Salary')) {
+                        link.style.display = 'none';
+                    }
+                });
+            }
+        }
+    },
+
+    // Transform the main content area
+    transformContent() {
+        // Find the main content container
+        const mainContent = document.querySelector('main, article, .content, .post, .entry-content');
+        if (mainContent) {
+            mainContent.classList.add('wellness-content');
+            
+            // Style the post title
+            const title = mainContent.querySelector('h1, .entry-title, .post-title');
+            if (title) {
+                title.classList.add('wellness-post-title');
+            }
+            
+            // Style the post meta
+            const meta = mainContent.querySelector('.entry-meta, .post-meta, .byline, .posted-on');
+            if (meta) {
+                meta.classList.add('wellness-meta');
+            }
+            
+            // Style the featured image
+            const featuredImage = mainContent.querySelector('.wp-post-image, .post-thumbnail, img');
+            if (featuredImage && featuredImage.closest('figure, div')) {
+                featuredImage.closest('figure, div').classList.add('wellness-featured-image');
+            }
+            
+            // Remove any Zyntis Financial related content
+            const allElements = mainContent.querySelectorAll('*');
+            allElements.forEach(el => {
+                if (el.textContent && (
+                    el.textContent.includes('Zyntis Financial') ||
+                    el.textContent.includes('Salary Saving') ||
+                    el.textContent.includes('HSA Optimization') ||
+                    el.textContent.includes('Credit Building')
+                )) {
+                    el.style.display = 'none';
+                }
+            });
+        }
+    },
+
+    // Transform the sidebar
+    transformSidebar() {
+        const sidebar = document.querySelector('aside, .sidebar, [class*="sidebar"]');
+        if (sidebar) {
+            // Remove financial-related widgets
+            const widgets = sidebar.querySelectorAll('.widget, [class*="widget"]');
+            widgets.forEach(widget => {
+                if (widget.textContent.includes('Financial') || 
+                    widget.textContent.includes('HSA') ||
+                    widget.textContent.includes('Credit') ||
+                    widget.textContent.includes('Salary')) {
+                    widget.style.display = 'none';
+                }
+            });
+            
+            // Add a wellness-related widget
+            const wellnessWidget = document.createElement('div');
+            wellnessWidget.className = 'widget wellness-widget';
+            wellnessWidget.innerHTML = `
+                <h3 style="color: #2e7d73; margin-bottom: 1rem;">Popular Topics</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="/?topic=stress-management" style="color: #2e7d73;">Stress Relief</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/?topic=health-optimization" style="color: #2e7d73;">Health Tips</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/?topic=personal-growth" style="color: #2e7d73;">Personal Growth</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/?topic=nutrition-fundamentals" style="color: #2e7d73;">Nutrition</a></li>
+                </ul>
+            `;
+            
+            if (sidebar.firstChild) {
+                sidebar.insertBefore(wellnessWidget, sidebar.firstChild);
+            } else {
+                sidebar.appendChild(wellnessWidget);
+            }
+        }
+    },
+
+    // Replace footer with WellnessRooted version
+    replaceFooter() {
+        const footers = document.querySelectorAll('footer');
+        footers.forEach(footer => {
+            const footerHtml = footer.innerHTML;
+            
+            if (footerHtml.includes('Zyntis Financial') || 
+                footerHtml.includes('Salary Saving') ||
+                footerHtml.includes('HSA Optimization') ||
+                footerHtml.includes('Research Hubs')) {
+                
+                console.log('🔄 Replacing footer with WellnessRooted version');
+                
+                const wellnessFooter = document.createElement('footer');
+                wellnessFooter.className = 'wellness-footer';
+                wellnessFooter.innerHTML = `
+                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                        <div style="text-align: center; color: #4a5568;">
+                            <div style="margin-bottom: 2rem;">
+                                <h3 style="color: #2e7d73; font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">WellnessRooted</h3>
+                                <p style="color: #718096; max-width: 400px; margin: 0 auto;">Practical wellness for real life—simple, science-backed, sustainable.</p>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                                <a href="/" style="color: #2e7d73; text-decoration: none;">Home</a>
+                                <a href="/?topic=stress-management" style="color: #2e7d73; text-decoration: none;">Stress Relief</a>
+                                <a href="/?topic=health-optimization" style="color: #2e7d73; text-decoration: none;">Health Tips</a>
+                                <a href="/?topic=personal-growth" style="color: #2e7d73; text-decoration: none;">Personal Growth</a>
+                                <a href="/?topic=nutrition-fundamentals" style="color: #2e7d73; text-decoration: none;">Nutrition</a>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                                <a href="/about" style="color: #718096; text-decoration: none;">About</a>
+                                <a href="/contact" style="color: #718096; text-decoration: none;">Contact</a>
+                                <a href="/privacy" style="color: #718096; text-decoration: none;">Privacy</a>
+                                <a href="/terms" style="color: #718096; text-decoration: none;">Terms</a>
+                            </div>
+                            
+                            <div style="border-top: 1px solid #e2e8f0; padding-top: 2rem;">
+                                <p style="color: #a0aec0; font-size: 0.875rem;">© 2026 WellnessRooted. All rights reserved.</p>
+                                <p style="color: #cbd5e0; font-size: 0.75rem; margin-top: 0.5rem;">WellnessRooted is a Zyntis company. Information provided for educational purposes only.</p>
                             </div>
                         </div>
-                    `;
-                    
-                    // Replace the footer
-                    if (footer.parentNode) {
-                        footer.parentNode.replaceChild(wellnessFooter, footer);
+                    </div>
+                `;
+                
+                if (footer.parentNode) {
+                    footer.parentNode.replaceChild(wellnessFooter, footer);
+                }
+            }
+        });
+    },
+
+    // Add a "Back to Home" button
+    addBackToHomeButton() {
+        const mainContent = document.querySelector('main, article, .content, .post, .entry-content');
+        if (mainContent && !document.querySelector('.wellness-back-home')) {
+            const backButton = document.createElement('div');
+            backButton.style.textAlign = 'center';
+            backButton.innerHTML = '<a href="/" class="wellness-back-home">← Back to WellnessRooted Home</a>';
+            
+            // Insert after the content
+            if (mainContent.nextSibling) {
+                mainContent.parentNode.insertBefore(backButton, mainContent.nextSibling);
+            } else {
+                mainContent.parentNode.appendChild(backButton);
+            }
+        }
+    },
+
+    // Add related articles section
+    addRelatedArticles() {
+        if (!document.querySelector('.wellness-related')) {
+            const relatedSection = document.createElement('div');
+            relatedSection.className = 'wellness-related';
+            relatedSection.innerHTML = `
+                <h2>You Might Also Enjoy</h2>
+                <div class="wellness-related-grid">
+                    <div class="wellness-related-card">
+                        <h3>Find Calm in 3 Minutes</h3>
+                        <p>Practical techniques that work anywhere, anytime—no meditation experience required.</p>
+                        <a href="/wellness/find-calm-in-3-minutes/" class="read-more">Read More →</a>
+                    </div>
+                    <div class="wellness-related-card">
+                        <h3>Morning Metabolism</h3>
+                        <p>Wake up your metabolism with this 2-minute morning ritual used by biohackers.</p>
+                        <a href="/wellness/morning-metabolism/" class="read-more">Read More →</a>
+                    </div>
+                    <div class="wellness-related-card">
+                        <h3>Abundance Mindset</h3>
+                        <p>How wealthy people think differently about money (and how you can too).</p>
+                        <a href="/wellness/abundance-mindset/" class="read-more">Read More →</a>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(relatedSection);
+        }
+    },
+
+    // Remove any Zyntis Financial branding
+    cleanupZyntisBranding() {
+        const isBlogPost = window.location.pathname.includes('/wellness/');
+        if (isBlogPost) {
+            const allElements = document.querySelectorAll('*');
+            allElements.forEach(el => {
+                if (el.textContent && (
+                    el.textContent.includes('Zyntis Financial') ||
+                    el.textContent.includes('Salary Saving') ||
+                    el.textContent.includes('HSA Optimization') ||
+                    el.textContent.includes('Credit Building') ||
+                    el.textContent.includes('Research Hubs')
+                )) {
+                    if (!el.closest('.wellness-footer') && !el.closest('.wellness-header')) {
+                        el.style.display = 'none';
                     }
                 }
-            }, 500); // Check every 500ms until we find it
-
-            // Stop checking after 5 seconds to avoid infinite loop
-            setTimeout(() => clearInterval(checkInterval), 5000);
+            });
         }
     }
 };
@@ -407,11 +805,13 @@ const WellnessRootedLoader = {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         WellnessRootedLoader.init();
-        WellnessRootedLoader.overrideBlogFooter();
+        WellnessRootedLoader.themeBlogPost();
+        WellnessRootedLoader.cleanupZyntisBranding();
     });
 } else {
     WellnessRootedLoader.init();
-    WellnessRootedLoader.overrideBlogFooter();
+    WellnessRootedLoader.themeBlogPost();
+    WellnessRootedLoader.cleanupZyntisBranding();
 }
 
 // Handle back/forward browser buttons
@@ -422,19 +822,19 @@ window.addEventListener('popstate', () => {
     WellnessRootedLoader.setActiveButton(topic);
 });
 
-// Run footer override on every page load (including blog posts)
+// Run theming on every page load
 window.addEventListener('load', () => {
-    WellnessRootedLoader.overrideBlogFooter();
+    WellnessRootedLoader.themeBlogPost();
+    WellnessRootedLoader.cleanupZyntisBranding();
 });
 
-// Also run when content changes (for single-page navigation)
+// Watch for dynamic content changes
 if (typeof MutationObserver !== 'undefined') {
     const observer = new MutationObserver((mutations) => {
-        // Check if new content loaded that might contain footer
-        WellnessRootedLoader.overrideBlogFooter();
+        WellnessRootedLoader.themeBlogPost();
+        WellnessRootedLoader.cleanupZyntisBranding();
     });
     
-    // Start observing when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
         observer.observe(document.body, {
             childList: true,
