@@ -1,7 +1,7 @@
 // WELLNESSROOTED - MODULE LOADER
 // FIXED: Removed invalid :contains() selector
 // FIXED: Using content-card span for read times
-// Version: 3.6 - Added all WordPress article links for all topics
+// Version: 3.7 - Added blog post footer override to remove Zyntis footer
 
 const WellnessRootedLoader = {
     // Content for each topic
@@ -274,7 +274,7 @@ const WellnessRootedLoader = {
 
     // Initialize event listeners
     init() {
-        console.log('🚀 WellnessRooted Loader Initialized - Version 3.6');
+        console.log('🚀 WellnessRooted Loader Initialized - Version 3.7');
         
         // Get buttons by their IDs
         const btnStress = document.getElementById('btn-stress') || document.querySelector('[data-topic="stress-management"]');
@@ -351,14 +351,67 @@ const WellnessRootedLoader = {
             this.setActiveButton(topic);
             this.updateContent(topic);
         }, 100); // Small delay to ensure DOM is ready
+    },
+
+    // NEW: Blog post footer override - removes Zyntis footer and adds WellnessRooted footer
+    overrideBlogFooter() {
+        // Check if we're on a blog post (WordPress article)
+        const isBlogPost = window.location.pathname.includes('/wellness/') || 
+                          document.querySelector('article.post, .post-content, .entry-content, .blog-post');
+        
+        if (isBlogPost) {
+            console.log('📝 Blog post detected - checking footer');
+            
+            // Keep checking until footer is loaded (WordPress might load it late)
+            const checkInterval = setInterval(() => {
+                const footer = document.querySelector('footer');
+                
+                // Check if footer exists and contains Zyntis content
+                if (footer && (footer.innerHTML.includes('zyntis.com') || 
+                              footer.innerHTML.includes('Zyntis') ||
+                              footer.querySelector('.site-info, .copyright'))) {
+                    
+                    console.log('🔄 Found Zyntis footer in blog post - replacing with WellnessRooted footer');
+                    clearInterval(checkInterval);
+                    
+                    // Create WellnessRooted custom footer
+                    const wellnessFooter = document.createElement('footer');
+                    wellnessFooter.className = 'wellness-footer blog-footer';
+                    wellnessFooter.innerHTML = `
+                        <div class="footer-content" style="text-align: center; padding: 2rem; background: #f8fafc; margin-top: 3rem; border-top: 1px solid #e2e8f0;">
+                            <p style="color: #4a5568; margin-bottom: 0.5rem;">© 2026 WellnessRooted. All rights reserved.</p>
+                            <div style="margin-top: 0.5rem;">
+                                <a href="/privacy" style="color: #2f855a; text-decoration: none; margin: 0 0.5rem; font-size: 0.9rem;">Privacy</a>
+                                <span style="color: #cbd5e0;">|</span>
+                                <a href="/terms" style="color: #2f855a; text-decoration: none; margin: 0 0.5rem; font-size: 0.9rem;">Terms</a>
+                                <span style="color: #cbd5e0;">|</span>
+                                <a href="/contact" style="color: #2f855a; text-decoration: none; margin: 0 0.5rem; font-size: 0.9rem;">Contact</a>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Replace the footer
+                    if (footer.parentNode) {
+                        footer.parentNode.replaceChild(wellnessFooter, footer);
+                    }
+                }
+            }, 500); // Check every 500ms until we find it
+
+            // Stop checking after 5 seconds to avoid infinite loop
+            setTimeout(() => clearInterval(checkInterval), 5000);
+        }
     }
 };
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => WellnessRootedLoader.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        WellnessRootedLoader.init();
+        WellnessRootedLoader.overrideBlogFooter();
+    });
 } else {
     WellnessRootedLoader.init();
+    WellnessRootedLoader.overrideBlogFooter();
 }
 
 // Handle back/forward browser buttons
@@ -368,3 +421,24 @@ window.addEventListener('popstate', () => {
     WellnessRootedLoader.updateContent(topic);
     WellnessRootedLoader.setActiveButton(topic);
 });
+
+// Run footer override on every page load (including blog posts)
+window.addEventListener('load', () => {
+    WellnessRootedLoader.overrideBlogFooter();
+});
+
+// Also run when content changes (for single-page navigation)
+if (typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver((mutations) => {
+        // Check if new content loaded that might contain footer
+        WellnessRootedLoader.overrideBlogFooter();
+    });
+    
+    // Start observing when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
